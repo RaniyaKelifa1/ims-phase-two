@@ -5,100 +5,113 @@ import React, { useEffect, useState } from 'react';
 
 
 const AddMotorPolicy = () => {
-  const MOTOR_VEHICLE_INSURANCE_OPTION_ID = 1; // Assuming 1 is the ID for Motor Vehicle Insurance
-  const [form, setForm] = useState({
-    PolicyNo: '',
-    clientID: '',
-    providerID: '',
-    OptionID: MOTOR_VEHICLE_INSURANCE_OPTION_ID,
-    Branch: '',
-    Premium: '',
-    PolicyPeriodStart: '',
-    PolicyPeriodEnd: '',
-    GeographicalArea: '',
-    Commission: '',
-
-  });
-
-  const [clients, setClients] = useState([]);
-  const [providers, setProviders] = useState([]);
-  const [policy, setPolicy] = useState([]);
-  const [error, setError] = useState({});
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { idData, policyno } = location.state || {};
-
-  const [clientName, setClientName] = useState('');
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [clientsRes,PolicyRes, providersRes] = await Promise.all([
-          axios.get('https://bminsurancebrokers.com/imlservertwo/clients'),
-          axios.get('https://bminsurancebrokers.com/imlservertwo/Policies'),
-          axios.get('https://bminsurancebrokers.com/imlservertwo/insurance-providers'),
-        ]);
-
-        const client = clientsRes.data.find(client => client.ClientID === idData);
-        if (client) {
-          setClientName(client.Name);
+    const MOTOR_VEHICLE_INSURANCE_OPTION_ID = 1; // Assuming 1 is the ID for Motor Vehicle Insurance
+    const [form, setForm] = useState({
+      PolicyID:12,
+      PolicyNo: '',
+      ClientID: 30, // consistent capitalization
+      ProviderID: 1, // consistent capitalization
+      OptionID: MOTOR_VEHICLE_INSURANCE_OPTION_ID,
+      Branch: '',
+      Premium: '',
+      PolicyPeriodStart: '',
+      PolicyPeriodEnd: '',
+      GeographicalArea: '',
+      Commission: '',
+    });
+  
+    const [clients, setClients] = useState([]);
+    const [providers, setProviders] = useState([]);
+    const [error, setError] = useState({});
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { idData, policyno } = location.state || {};
+  
+    const [clientName, setClientName] = useState('');
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const [clientsRes, PolicyRes, providersRes] = await Promise.all([
+            axios.get('https://bminsurancebrokers.com/imlservertwo/clients'),
+            axios.get('https://bminsurancebrokers.com/imlservertwo/Policies'),
+            axios.get('https://bminsurancebrokers.com/imlservertwo/insurance-providers'),
+          ]);
+  
+          const client = clientsRes.data.find(client => client.ClientID === idData);
+          if (client) {
+            setClientName(client.Name);
+          }
+  
+          setClients(clientsRes.data);
+          setProviders(providersRes.data);
+        } catch (err) {
+          console.error('Error fetching data', err);
         }
-
-        setClients(clientsRes.data);
-        setPolicy(PolicyRes.data);
-        setProviders(providersRes.data);
-      } catch (err) {
-        console.error('Error fetching data', err);
+      };
+  
+      fetchData();
+    }, [idData]);
+  
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setForm(prevForm => ({
+        ...prevForm,
+        [name]: value
+      }));
+    };
+  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      try {
+        const data = {
+          PolicyID:form.PolicyID,
+          PolicyNo: form.PolicyNo,
+          ClientID: form.ClientID,
+          ProviderID: form.ProviderID,
+          OptionID: form.OptionID,
+          Branch: form.Branch,
+          Premium: form.Premium,
+          PolicyPeriodStart: form.PolicyPeriodStart,
+          PolicyPeriodEnd: form.PolicyPeriodEnd,
+          GeographicalArea: form.GeographicalArea,
+          Commission: form.Commission,
+        };
+  
+        await axios.post('https://bminsurancebrokers.com/imlservertwo/policies', data, {
+          headers: { 'Content-Type': 'application/json' }
+        });
+  
+        const policyNo = form.PolicyNo;
+        const clientName = clients.find(client => client.ClientID === idData)?.Name;
+  
+        navigate('/add-vehicle', { state: { policyNo, clientName } });
+      } catch (error) {
+        if (error.response && error.response.data) {
+          const errors = error.response.data.errors || {};
+          setError(errors);
+        } else {
+          setError({ general: 'Error adding policy. Please try again.' });
+        }
+        console.error('Error adding policies', error.response ? error.response.data : error.message);
+        const data = {
+          PolicyID:form.PolicyID,
+          PolicyNo: form.PolicyNo,
+          ClientID: form.ClientID,
+          ProviderID: form.ProviderID,
+          OptionID: form.OptionID,
+          Branch: form.Branch,
+          Premium: form.Premium,
+          PolicyPeriodStart: form.PolicyPeriodStart,
+          PolicyPeriodEnd: form.PolicyPeriodEnd,
+          GeographicalArea: form.GeographicalArea,
+          Commission: form.Commission,
+        };
+        console.log(data)
+        console.log(form)
       }
     };
-
-    fetchData();
-  }, [idData]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(prevForm => ({ ...prevForm, [name]: value }));
-  };
-
-  const handleVehicleChange = (index, e) => {
-    const { name, value } = e.target;
-    setForm(prevForm => {
-      const updatedVehicles = [...prevForm.vehicles];
-      updatedVehicles[index] = { ...updatedVehicles[index], [name]: value };
-      return { ...prevForm, vehicles: updatedVehicles };
-    });
-  };
-
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const data = {
-        ...form,
-        clientID: idData,
-      };
-
-      await axios.post('https://bminsurancebrokers.com/imlservertwo/policies', data, {
-        headers: { 'Content-Type': 'application/json' }
-      });
-    const policyNo = form.PolicyNo;
-    const clientName = clients.find(client => client.ClientID === idData)?.Name;
-    console.log(data)
-    // Navigate to the AddVehicle page with policy ID, policy number, and client name
-    navigate('/add-vehicle', { state: { policyNo, clientName } });
-      // Handle success, e.g., redirect or show a success message
-    } catch (error) {
-      if (error.response && error.response.data) {
-        const errors = error.response.data.errors || {};
-        setError(errors);
-      } else {
-        setError({ general: 'Error adding policy. Please try again.' });
-      }
-      console.error('Error adding policys', error.response ? error.response.data : error.message);
-    
-    }
-  };
-
+  
   return (
     <section className="min-h-screen flex items-center justify-center bg-textured relative">
       <div className="absolute inset-0 z-0"></div>
@@ -123,33 +136,32 @@ const AddMotorPolicy = () => {
               {error.PolicyNo && <p className="text-red-500 text-sm">{error.PolicyNo.msg}</p>}
 
               <input
-                type="text"
-                name="clientName"
-                placeholder="Client Name"
-                value={clientName}
-                readOnly
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-              />
+  type="text"
+  name="clientName"
+  value={clientName}
+  readOnly
+  className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
+/>
 
-              <select
-                name="providerID"
-                value={form.providerID}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-white"
-              >
-                <option value="">Select Provider</option>
-                {providers.map(provider => (
-                  <option key={provider.ProviderID} value={provider.ProviderID}>{provider.Name}</option>
-                ))}
-              </select>
+<select
+  name="ProviderID" // Correct the name attribute
+  value={form.ProviderID} // Correct value from form state
+  onChange={handleChange}
+  className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-white"
+>
+  <option value="">Select Provider</option>
+  {providers.map(provider => (
+    <option key={provider.ProviderID} value={provider.ProviderID}>{provider.Name}</option>
+  ))}
+</select>
+
 
    
 
               <input
                 type="text"
-                name="branch"
-                value={form.branch}
+                name="Branch"
+                value={form.Branch}
                 onChange={handleChange}
                 placeholder="Branch"
                 required
@@ -158,8 +170,8 @@ const AddMotorPolicy = () => {
 
               <input
                 type="number"
-                name="premium"
-                value={form.premium}
+                name="Premium"
+                value={form.Premium}
                 onChange={handleChange}
                 placeholder="Premium"
                 required
@@ -171,8 +183,8 @@ const AddMotorPolicy = () => {
                   <label htmlFor="policyPeriodStart" className="text-gray-100">Policy Start</label>
                   <input
                     type="date"
-                    name="policyPeriodStart"
-                    value={form.policyPeriodStart}
+                    name="PolicyPeriodStart"
+                    value={form.PolicyPeriodStart}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
@@ -182,8 +194,8 @@ const AddMotorPolicy = () => {
                   <label htmlFor="policyPeriodEnd" className="text-gray-100">Policy End</label>
                   <input
                     type="date"
-                    name="policyPeriodEnd"
-                    value={form.policyPeriodEnd}
+                    name="PolicyPeriodEnd"
+                    value={form.PolicyPeriodEnd}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
@@ -193,8 +205,8 @@ const AddMotorPolicy = () => {
 
               <input
                 type="text"
-                name="geographicalArea"
-                value={form.geographicalArea}
+                name="GeographicalArea"
+                value={form.GeographicalArea}
                 onChange={handleChange}
                 placeholder="Geographical Area"
                 required
@@ -203,13 +215,16 @@ const AddMotorPolicy = () => {
 
               <input
                 type="number"
-                name="commission"
-                value={form.commission}
+                name="Commission"
+                value={form.Commission}
                 onChange={handleChange}
                 placeholder="Commission"
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
               />
+
+           
+
 
               <button
                 type="submit"
