@@ -94,7 +94,7 @@ const AddMotorPolicy = () => {
         vehicles: form.vehicles.slice(0, form.vehicleCount),
       };
 
-      await axios.post('/https://bminsurancebrokers.com/imlservertwo/policies', data, {
+      await axios.post('https://bminsurancebrokers.com/imlservertwo/policies', data, {
         headers: { 'Content-Type': 'application/json' }
       });
     const policyNo = form.PolicyNo;
