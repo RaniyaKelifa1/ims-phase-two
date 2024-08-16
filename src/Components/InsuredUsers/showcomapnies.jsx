@@ -48,7 +48,7 @@ const ShowCompany= () => {
   };
 
   const handleRowClick = (clientId) => {
-console.log(idClick)
+console.log(clientId)
     navigate('/chooseInsruance', { state: { idClick: clientId } });
   };
 
