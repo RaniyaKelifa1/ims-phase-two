@@ -10,7 +10,7 @@ const AddMotorPolicy = () => {
     PolicyNo: '',
     clientID: '',
     providerID: '',
-    optionID: MOTOR_VEHICLE_INSURANCE_OPTION_ID,
+    optionID: "MOTOR_VEHICLE"
     branch: '',
     premium: '',
     policyPeriodStart: '',
@@ -86,37 +86,36 @@ const AddMotorPolicy = () => {
   };
 
   const handleSubmit = async (e) => {
-  
-  e.preventDefault();
-  try {
-  const data = {
-    ...form,
-    clientID: idData,
-    vehicles: form.vehicles.slice(0, form.vehicleCount),
-  };
+    e.preventDefault();
+    try {
+      const data = {
+        ...form,
+        clientID: idData,
+        vehicles: form.vehicles.slice(0, form.vehicleCount),
+      };
 
-  await axios.post('https://bminsurancebrokers.com/imlservertwo/policies', data, {
-       headers: { 'Content-Type': 'application/json' }
-   });
- const policyNo = form.PolicyNo;
-const clientName = clients.find(client => client.ClientID === idData)?.Name;
- console.log(data)
-  console.log(clientName)
-  console.log(policyNo)
+      await axios.post('https://bminsurancebrokers.com/imlservertwo/policies', data, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+    const policyNo = form.PolicyNo;
+    const clientName = clients.find(client => client.ClientID === idData)?.Name;
+    console.log(data)
+    // console.log(clientName)
+    // console.log(policyNo)
 
-   // Navigate to the AddVehicle page with policy ID, policy number, and client name
-   navigate('/add-vehicle', { state: { policyNo, clientName } });
-     // Handle success, e.g., redirect or show a success message
+    // Navigate to the AddVehicle page with policy ID, policy number, and client name
+    navigate('/add-vehicle', { state: { policyNo, clientName } });
+      // Handle success, e.g., redirect or show a success message
     } catch (error) {
-    if (error.response && error.response.data) {
-       const errors = error.response.data.errors || {};
+      if (error.response && error.response.data) {
+        const errors = error.response.data.errors || {};
         setError(errors);
-   } else {
-    setError({ general: 'Error adding policy. Please try again.' });
-   }
-    console.error('Error adding policys', error.response ? error.response.data : error.message);
+      } else {
+        setError({ general: 'Error adding policy. Please try again.' });
+      }
+      console.error('Error adding policys', error.response ? error.response.data : error.message);
     
-  }
+    }
   };
 
   return (
