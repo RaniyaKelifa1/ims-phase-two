@@ -69,20 +69,6 @@ const AddMotorPolicy = () => {
     });
   };
 
-  const handleVehicleCountChange = (e) => {
-    const count = parseInt(e.target.value, 10);
-    setForm(prevForm => {
-      const updatedVehicles = [...prevForm.vehicles];
-      if (updatedVehicles.length < count) {
-        while (updatedVehicles.length < count) {
-          updatedVehicles.push({});
-        }
-      } else {
-        updatedVehicles.splice(count);
-      }
-      return { ...prevForm, vehicleCount: count, vehicles: updatedVehicles };
-    });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,7 +76,6 @@ const AddMotorPolicy = () => {
       const data = {
         ...form,
         clientID: idData,
-        vehicles: form.vehicles.slice(0, form.vehicleCount),
       };
 
       await axios.post('https://bminsurancebrokers.com/imlservertwo/policies', data, {
@@ -99,9 +84,6 @@ const AddMotorPolicy = () => {
     const policyNo = form.PolicyNo;
     const clientName = clients.find(client => client.ClientID === idData)?.Name;
     console.log(data)
-    // console.log(clientName)
-    // console.log(policyNo)
-
     // Navigate to the AddVehicle page with policy ID, policy number, and client name
     navigate('/add-vehicle', { state: { policyNo, clientName } });
       // Handle success, e.g., redirect or show a success message
