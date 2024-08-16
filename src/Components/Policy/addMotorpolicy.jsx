@@ -7,18 +7,16 @@ import React, { useEffect, useState } from 'react';
 const AddMotorPolicy = () => {
   const MOTOR_VEHICLE_INSURANCE_OPTION_ID = 1; // Assuming 1 is the ID for Motor Vehicle Insurance
   const [form, setForm] = useState({
-    PolicyNo: '',
+   PolicyNo: '',
     clientID: '',
     providerID: '',
-    optionID: "MOTOR_VEHICLE",
-    branch: '',
-    premium: '',
-    policyPeriodStart: '',
-    policyPeriodEnd: '',
-    geographicalArea: '',
-    commission: '',
-    vehicleCount: 1,
-    vehicles: [],
+    OptionID: MOTOR_VEHICLE_INSURANCE_OPTION_ID,
+    Branch: '',
+    Premium: '',
+    PolicyPeriodStart: '',
+    PolicyPeriodEnd: '',
+    GeographicalArea: '',
+    Commission: '',
   });
 
   const [clients, setClients] = useState([]);
