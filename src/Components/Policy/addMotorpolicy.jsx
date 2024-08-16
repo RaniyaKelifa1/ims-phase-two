@@ -6,9 +6,18 @@ import React, { useEffect, useState } from 'react';
 
 const AddMotorPolicy = () => {
     const MOTOR_VEHICLE_INSURANCE_OPTION_ID = 1; // Assuming 1 is the ID for Motor Vehicle Insurance
-    const [form, setForm] = useState({
+
+    const [clients, setClients] = useState([]);
+    const [providers, setProviders] = useState([]);
+    const [error, setError] = useState({});
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { idData, policyno } = location.state || {};
+  
+    const [clientName, setClientName] = useState('');
+      const [form, setForm] = useState({
       PolicyNo: '',
-      ClientID: '', // consistent capitalization
+       ClientID: idData, // consistent capitalization
       ProviderID: '', // consistent capitalization
       OptionID: MOTOR_VEHICLE_INSURANCE_OPTION_ID,
       Branch: '',
@@ -18,16 +27,6 @@ const AddMotorPolicy = () => {
       GeographicalArea: '',
       Commission: '',
     });
-  
-    const [clients, setClients] = useState([]);
-    const [providers, setProviders] = useState([]);
-    const [error, setError] = useState({});
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { idData, policyno } = location.state || {};
-  
-    const [clientName, setClientName] = useState('');
-  
     useEffect(() => {
       const fetchData = async () => {
         try {
