@@ -110,6 +110,7 @@ const ShowPolicies = () => {
   ).filter((policy) => clientIdFilter === policy.ClientID);
 
   const getClientName = (clientId) => {
+console.log(clientId);
     const client = clients.find((c) => c.ClientID === clientId);
     return client ? client.Name : 'Unknown';
   };
