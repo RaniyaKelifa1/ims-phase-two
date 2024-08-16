@@ -1,243 +1,199 @@
-import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-
-
-const AddMotorPolicy = () => {
-  const MOTOR_VEHICLE_INSURANCE_OPTION_ID = 1; // Assuming 1 is the ID for Motor Vehicle Insurance
-  const [form, setForm] = useState({
+function AddPolicyForm() {
+  const [formData, setFormData] = useState({
     PolicyNo: '',
-    clientID: '',
-    providerID: '',
-    OptionID: MOTOR_VEHICLE_INSURANCE_OPTION_ID,
+    ClientID: '',
+    ProviderID: '',
+    OptionID: '',
     Branch: '',
     Premium: '',
     PolicyPeriodStart: '',
     PolicyPeriodEnd: '',
     GeographicalArea: '',
-    Commission: '',
-
+    Commission: ''
   });
 
-  const [clients, setClients] = useState([]);
-  const [providers, setProviders] = useState([]);
-  const [policy, setPolicy] = useState([]);
-  const [error, setError] = useState({});
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { idData, policyno } = location.state || {};
-
-  const [clientName, setClientName] = useState('');
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [clientsRes,PolicyRes, providersRes] = await Promise.all([
-          axios.get('https://bminsurancebrokers.com/imlservertwo/clients'),
-          axios.get('https://bminsurancebrokers.com/imlservertwo/Policies'),
-          axios.get('https://bminsurancebrokers.com/imlservertwo/insurance-providers'),
-        ]);
-
-        const client = clientsRes.data.find(client => client.ClientID === idData);
-        if (client) {
-          setClientName(client.Name);
-        }
-
-        setClients(clientsRes.data);
-        setPolicy(PolicyRes.data);
-        setProviders(providersRes.data);
-      } catch (err) {
-        console.error('Error fetching data', err);
-      }
-    };
-
-    fetchData();
-  }, [idData]);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prevForm => ({ ...prevForm, [name]: value }));
-  };
-
-  const handleVehicleChange = (index, e) => {
-    const { name, value } = e.target;
-    setForm(prevForm => {
-      const updatedVehicles = [...prevForm.vehicles];
-      updatedVehicles[index] = { ...updatedVehicles[index], [name]: value };
-      return { ...prevForm, vehicles: updatedVehicles };
-    });
-  };
-
-  const handleVehicleCountChange = (e) => {
-    const count = parseInt(e.target.value, 10);
-    setForm(prevForm => {
-      const updatedVehicles = [...prevForm.vehicles];
-      if (updatedVehicles.length < count) {
-        while (updatedVehicles.length < count) {
-          updatedVehicles.push({});
-        }
-      } else {
-        updatedVehicles.splice(count);
-      }
-      return { ...prevForm, vehicleCount: count, vehicles: updatedVehicles };
+    setFormData({
+      ...formData,
+      [name]: value
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
-      const data = {
-        ...form,
-        clientID: idData,
-      };
-
-      await axios.post('https://bminsurancebrokers.com/imlservertwo/policies', data, {
-        headers: { 'Content-Type': 'application/json' }
+      const response = await fetch('/imlservertwo/policies', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
       });
-    const policyNo = form.PolicyNo;
-    const clientName = clients.find(client => client.ClientID === idData)?.Name;
-    console.log(data)
-    // console.log(clientName)
-    // console.log(policyNo)
 
-    // Navigate to the AddVehicle page with policy ID, policy number, and client name
-    navigate('/add-vehicle', { state: { policyNo, clientName } });
-      // Handle success, e.g., redirect or show a success message
-    } catch (error) {
-      if (error.response && error.response.data) {
-        const errors = error.response.data.errors || {};
-        setError(errors);
-      } else {
-        setError({ general: 'Error adding policy. Please try again.' });
+      if (!response.ok) {
+        throw new Error('Failed to add policy');
       }
-      console.error('Error adding policys', error.response ? error.response.data : error.message);
+
+      const result = await response.json();
+      alert(`Policy added successfully with ID: ${result.policyID}`);
+    } catch (err) {
+      console.error('Error adding policy:', err);
+      setError(err.message);
     }
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-textured relative">
-      <div className="absolute inset-0 z-0"></div>
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="bg-gray-900 p-8 rounded shadow-md max-w-4xl mx-auto flex">
-          <div className="w-full pr-4">
-            <h2 className="mb-8 text-3xl font-bold text-gray-100 text-center">
-              Add Motor Policy{' '}
-              <span className="text-blue-400 font-semibold">{clientName}</span>
-            </h2>
-            {error.general && <p className="text-red-500 text-center mb-4">{error.general}</p>}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                name="PolicyNo"
-                value={form.PolicyNo}
-                onChange={handleChange}
-                placeholder="Policy Number"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-              />
-              {error.PolicyNo && <p className="text-red-500 text-sm">{error.PolicyNo.msg}</p>}
-
-              <input
-                type="text"
-                name="clientName"
-                placeholder="Client Name"
-                value={clientName}
-                readOnly
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-              />
-
-              <select
-                name="providerID"
-                value={form.providerID}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-white"
-              >
-                <option value="">Select Provider</option>
-                {providers.map(provider => (
-                  <option key={provider.ProviderID} value={provider.ProviderID}>{provider.Name}</option>
-                ))}
-              </select>
-
-   
-
-              <input
-                type="text"
-                name="branch"
-                value={form.branch}
-                onChange={handleChange}
-                placeholder="Branch"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-              />
-
-              <input
-                type="number"
-                name="premium"
-                value={form.premium}
-                onChange={handleChange}
-                placeholder="Premium"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-              />
-
-              <div className="flex space-x-4">
-                <div>
-                  <label htmlFor="policyPeriodStart" className="text-gray-100">Policy Start</label>
-                  <input
-                    type="date"
-                    name="policyPeriodStart"
-                    value={form.policyPeriodStart}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="policyPeriodEnd" className="text-gray-100">Policy End</label>
-                  <input
-                    type="date"
-                    name="policyPeriodEnd"
-                    value={form.policyPeriodEnd}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-                  />
-                </div>
-              </div>
-
-              <input
-                type="text"
-                name="geographicalArea"
-                value={form.geographicalArea}
-                onChange={handleChange}
-                placeholder="Geographical Area"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-              />
-
-              <input
-                type="number"
-                name="commission"
-                value={form.commission}
-                onChange={handleChange}
-                placeholder="Commission"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-              />
-              <button
-                type="submit"
-                className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700"
-              >
-                Add Motor Policy
-              </button>
-            </form>
-          </div>
+    <div className="bg-gray-100 p-4">
+      <h2 className="text-xl font-semibold mb-4">Add New Policy</h2>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Policy Number
+          </label>
+          <input
+            type="text"
+            name="PolicyNo"
+            value={formData.PolicyNo}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md"
+          />
         </div>
-      </div>
-    </section>
-  );
-};
 
-export default AddMotorPolicy;
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Client ID
+          </label>
+          <input
+            type="text"
+            name="ClientID"
+            value={formData.ClientID}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Provider ID
+          </label>
+          <input
+            type="text"
+            name="ProviderID"
+            value={formData.ProviderID}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Option ID
+          </label>
+          <input
+            type="text"
+            name="OptionID"
+            value={formData.OptionID}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Branch
+          </label>
+          <input
+            type="text"
+            name="Branch"
+            value={formData.Branch}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Premium
+          </label>
+          <input
+            type="text"
+            name="Premium"
+            value={formData.Premium}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Policy Period Start
+          </label>
+          <input
+            type="date"
+            name="PolicyPeriodStart"
+            value={formData.PolicyPeriodStart}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Policy Period End
+          </label>
+          <input
+            type="date"
+            name="PolicyPeriodEnd"
+            value={formData.PolicyPeriodEnd}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Geographical Area
+          </label>
+          <input
+            type="text"
+            name="GeographicalArea"
+            value={formData.GeographicalArea}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Commission
+          </label>
+          <input
+            type="text"
+            name="Commission"
+            value={formData.Commission}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded-md"
+          >
+            Add Policy
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default AddPolicyForm;
