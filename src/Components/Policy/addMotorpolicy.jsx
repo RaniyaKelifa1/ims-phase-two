@@ -65,7 +65,7 @@ const AddMotorPolicy = () => {
       try {
         const data = {
           PolicyNo: form.PolicyNo,
-          ClientID: form.ClientID,
+          ClientID: idData,
           ProviderID: form.ProviderID,
           OptionID: form.OptionID,
           Branch: form.Branch,
