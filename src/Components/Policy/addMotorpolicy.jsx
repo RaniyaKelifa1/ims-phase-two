@@ -90,7 +90,6 @@ const AddMotorPolicy = () => {
       const data = {
         ...form,
         clientID: idData,
-        vehicles: form.vehicles.slice(0, form.vehicleCount),
       };
 
       await axios.post('https://bminsurancebrokers.com/imlservertwo/policies', data, {
