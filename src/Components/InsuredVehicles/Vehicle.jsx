@@ -103,7 +103,7 @@ const AddVehicle = () => {
     }));
   
     try {
-      const response = await axios.post('http://localhost:4000/https://bminsurancebrokers.com/imlservertwo/vehicles', vehiclesData, {
+      const response = await axios.post('https://bminsurancebrokers.com/imlservertwo/vehicles', vehiclesData, {
         headers: { 'Content-Type': 'application/json' }
       });
       console.log('Vehicles added successfully:', response.data);
@@ -112,6 +112,7 @@ const AddVehicle = () => {
     } catch (error) {
       console.error('Error adding vehicles:', error.response ? error.response.data : error.message);
       console.log(vehiclesData[0])
+      console.log(policyID)
     }
   };
 
