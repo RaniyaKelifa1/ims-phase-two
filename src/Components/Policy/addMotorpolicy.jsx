@@ -10,7 +10,7 @@ const AddMotorPolicy = () => {
     PolicyNo: '',
     clientID: '',
     providerID: '',
-    optionID: "MOTOR_VEHICLE"
+    optionID: "MOTOR_VEHICLE",
     branch: '',
     premium: '',
     policyPeriodStart: '',
