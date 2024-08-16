@@ -110,7 +110,7 @@ const ShowPolicies = () => {
   ).filter((policy) => clientIdFilter === policy.ClientID);
 
   const getClientName = (clientId) => {
-console.log(clientId);
+
     const client = clients.find((c) => c.ClientID === clientId);
     return client ? client.Name : 'Unknown';
   };
@@ -143,7 +143,7 @@ console.log(clientId);
               Export Selected
             </button>
             <button
-              onClick={() =>  navigate('/insurance/Motor-Vehicle', { state: { idData: clientIdFilter ,} })}
+              onClick={() =>  console.log(clientId); })}
               className="flex items-center text-blue-600 hover:text-blue-800"
             >
               <FaEdit className="mr-2" />
