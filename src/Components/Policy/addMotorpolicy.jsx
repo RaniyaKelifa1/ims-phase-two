@@ -7,10 +7,9 @@ import React, { useEffect, useState } from 'react';
 const AddMotorPolicy = () => {
     const MOTOR_VEHICLE_INSURANCE_OPTION_ID = 1; // Assuming 1 is the ID for Motor Vehicle Insurance
     const [form, setForm] = useState({
-      PolicyID:12,
       PolicyNo: '',
-      ClientID: 30, // consistent capitalization
-      ProviderID: 1, // consistent capitalization
+      ClientID: '', // consistent capitalization
+      ProviderID: '', // consistent capitalization
       OptionID: MOTOR_VEHICLE_INSURANCE_OPTION_ID,
       Branch: '',
       Premium: '',
@@ -65,7 +64,6 @@ const AddMotorPolicy = () => {
       e.preventDefault();
       try {
         const data = {
-          PolicyID:form.PolicyID,
           PolicyNo: form.PolicyNo,
           ClientID: form.ClientID,
           ProviderID: form.ProviderID,
@@ -95,7 +93,6 @@ const AddMotorPolicy = () => {
         }
         console.error('Error adding policies', error.response ? error.response.data : error.message);
         const data = {
-          PolicyID:form.PolicyID,
           PolicyNo: form.PolicyNo,
           ClientID: form.ClientID,
           ProviderID: form.ProviderID,
