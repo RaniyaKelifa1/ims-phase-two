@@ -143,7 +143,7 @@ const ShowPolicies = () => {
               Export Selected
             </button>
             <button
-    onClick={() =>  console.log(clientIdFilter)}
+              onClick={() =>  navigate('/insurance/Motor-Vehicle', { state: { idData: clientIdFilter} })}
               className="flex items-center text-blue-600 hover:text-blue-800"
             >
               <FaEdit className="mr-2" />
