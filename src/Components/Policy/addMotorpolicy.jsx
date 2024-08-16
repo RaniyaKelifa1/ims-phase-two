@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 const AddMotorPolicy = () => {
   const MOTOR_VEHICLE_INSURANCE_OPTION_ID = 1; // Assuming 1 is the ID for Motor Vehicle Insurance
   const [form, setForm] = useState({
-   PolicyNo: '',
+    PolicyNo: '',
     clientID: '',
     providerID: '',
     OptionID: MOTOR_VEHICLE_INSURANCE_OPTION_ID,
@@ -17,6 +17,7 @@ const AddMotorPolicy = () => {
     PolicyPeriodEnd: '',
     GeographicalArea: '',
     Commission: '',
+
   });
 
   const [clients, setClients] = useState([]);
@@ -112,7 +113,7 @@ const AddMotorPolicy = () => {
         setError({ general: 'Error adding policy. Please try again.' });
       }
       console.error('Error adding policys', error.response ? error.response.data : error.message);
-        navigate('/add-vehicle');
+    
     }
   };
 
