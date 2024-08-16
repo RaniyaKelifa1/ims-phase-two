@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation,useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const AddVehicle = () => {
@@ -18,7 +18,7 @@ const AddVehicle = () => {
         if (foundPolicy) {
           setPolicyID(foundPolicy.PolicyID);
         } else {
-          console.error('Policy not found for PolicyNo:', policyNO);
+          console.error('Policy not found for PolicyNo:', policyNo);
         }
       } catch (error) {
         console.error('Error fetching PolicyID:', error.response ? error.response.data : error.message);
@@ -29,7 +29,6 @@ const AddVehicle = () => {
   }, [policyNo]);
 
   useEffect(() => {
-    // Initialize the vehicles array based on the number of vehicles
     setVehicles(Array.from({ length: vehicleCount }, () => ({
       MakeAndModel: '',
       Year: '',
@@ -44,6 +43,7 @@ const AddVehicle = () => {
       DutyFree: 'No',
       OwnerType: '',
       AdditionalDetails: '',
+      Excess: ''
     })));
   }, [vehicleCount]);
 
@@ -58,7 +58,7 @@ const AddVehicle = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!policyID) {
       console.error('Policy ID not found');
       return;
@@ -78,7 +78,7 @@ const AddVehicle = () => {
       vehicle.DutyFree &&
       vehicle.OwnerType
     );
-  
+
     if (!isValid) {
       console.error('Please fill out all vehicle fields.');
       return;
@@ -101,18 +101,16 @@ const AddVehicle = () => {
       AdditionalDetails: vehicle.AdditionalDetails ?? null,
       Excess: vehicle.Excess ?? null
     }));
-  
+
     try {
       const response = await axios.post('https://bminsurancebrokers.com/imlservertwo/vehicles', vehiclesData, {
         headers: { 'Content-Type': 'application/json' }
       });
       console.log('Vehicles added successfully:', response.data);
       alert('Vehicles added successfully.');
-     navigate("/")
+      navigate("/");
     } catch (error) {
       console.error('Error adding vehicles:', error.response ? error.response.data : error.message);
-      console.log(vehiclesData[0])
-      console.log(policyID)
     }
   };
 
@@ -133,7 +131,7 @@ const AddVehicle = () => {
               name="vehicleCount"
               value={vehicleCount}
               min="1"
-              onChange={(e) => setVehicleCount(parseInt(e.target.value) || 1)}
+              onChange={(e) => setVehicleCount(parseInt(e.target.value, 10) || 1)}
               className="ml-4 px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
             />
           </div>
@@ -143,6 +141,7 @@ const AddVehicle = () => {
               <div key={index}>
                 <h3 className="text-xl text-gray-200 mb-4">Vehicle {index + 1}</h3>
                 <div className="grid grid-cols-2 gap-4">
+                  {/* Input fields for each vehicle */}
                   <input
                     type="text"
                     name="MakeAndModel"
@@ -233,15 +232,15 @@ const AddVehicle = () => {
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
                   />
-                  <select
+                  <input
+                    type="text"
                     name="DutyFree"
-                    value={vehicle.DutyFree || 'No'}
+                    value={vehicle.DutyFree}
                     onChange={e => handleVehicleChange(index, e)}
+                    placeholder="Duty Free"
+                    required
                     className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-                  >
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                  </select>
+                  />
                   <input
                     type="text"
                     name="OwnerType"
@@ -251,31 +250,30 @@ const AddVehicle = () => {
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
                   />
-                    <input
+                  <input
                     type="text"
-                    name="Excess"
-                    value={vehicle.Excess}
-                    onChange={e => handleVehicleChange(index, e)}
-                    placeholder="Excess"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-                  />
-                  <textarea
                     name="AdditionalDetails"
                     value={vehicle.AdditionalDetails}
                     onChange={e => handleVehicleChange(index, e)}
                     placeholder="Additional Details"
                     className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
                   />
+                  <input
+                    type="text"
+                    name="Excess"
+                    value={vehicle.Excess}
+                    onChange={e => handleVehicleChange(index, e)}
+                    placeholder="Excess"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
+                  />
                 </div>
-                <div className="border-b border-gray-700 my-6"></div>
               </div>
             ))}
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
+              className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              Submit
+              Submit Vehicles
             </button>
           </form>
         </div>
