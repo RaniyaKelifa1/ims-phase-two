@@ -143,7 +143,7 @@ const ShowPolicies = () => {
               Export Selected
             </button>
             <button
-              onClick={() =>  console.log(clientId))}
+    onClick={() =>  console.log(clientIdFilter)}
               className="flex items-center text-blue-600 hover:text-blue-800"
             >
               <FaEdit className="mr-2" />
