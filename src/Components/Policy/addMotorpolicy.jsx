@@ -113,7 +113,6 @@ const AddMotorPolicy = () => {
         setError({ general: 'Error adding policy. Please try again.' });
       }
       console.error('Error adding policys', error.response ? error.response.data : error.message);
-    
     }
   };
 
