@@ -211,22 +211,6 @@ const AddMotorPolicy = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
               />
 
-           
-
-              {form.vehicles.map((vehicle, index) => (
-                <div key={index} className="space-y-4">
-                  <input
-                    type="text"
-                    name="MakeAndModel"
-                    value={vehicle.MakeAndModel || ''}
-                    onChange={(e) => handleVehicleChange(index, e)}
-                    placeholder="Make and Model"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-700 text-gray-100"
-                  />
-                  {/* Add more vehicle fields as needed */}
-                </div>
-              ))}
-
               <button
                 type="submit"
                 className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700"
