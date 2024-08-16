@@ -17,7 +17,6 @@ const AddMotorPolicy = () => {
     PolicyNo: '',
     ClientID: idData,
     ProviderID: '',
-    OptionID: MOTOR_VEHICLE_INSURANCE_OPTION_ID,
     Branch: '',
     Premium: '',
     PolicyPeriodStart: '',
