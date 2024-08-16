@@ -55,7 +55,7 @@ const ShowPolicies = () => {
 
   const handleNavigateEdit = (policyId) => {
     console.log(clientIdFilter);
-    navigate('/editPolicy', { state: { id: policyId } });
+    // navigate('/editPolicy', { state: { id: policyId } });
   };
 
   const handleDelete = async (policyId) => {
